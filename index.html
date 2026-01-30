@@ -3,399 +3,348 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Controle Simples de Gastos</title>
+  <title>Controle de Gastos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            primary: {
+              50: '#e8f5f4',
+              100: '#d1ebe9',
+              200: '#a3d7d3',
+              300: '#75c3bd',
+              400: '#47afa7',
+              500: '#0d8a82',
+              600: '#0a6e68',
+              700: '#08534e',
+              800: '#053734',
+              900: '#031c1a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
   <style>
-    :root {
-      color-scheme: light;
-      --bg: #f5f7f8;
-      --card: #ffffff;
-      --text: #203036;
-      --muted: #5d6b6f;
-      --primary: #0f3d3e;
-      --primary-soft: #e1f0ee;
-      --accent: #1d6f6b;
-      --success: #2b7a4b;
-      --danger: #b4453c;
-      --border: #d9e1e5;
-      --shadow: 0 12px 32px rgba(15, 61, 62, 0.08);
-    }
-
     * {
-      box-sizing: border-box;
-      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      font-family: 'Outfit', system-ui, sans-serif;
     }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+    
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
     }
-
-    header {
-      padding: 28px 20px 12px;
-      background: var(--primary);
-      color: #fff;
-    }
-
-    header h1 {
-      margin: 0 0 6px;
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    header p {
-      margin: 0;
-      font-size: 0.95rem;
-      color: rgba(255, 255, 255, 0.78);
-    }
-
-    main {
-      padding: 20px;
-      max-width: 1120px;
-      margin: 0 auto;
-      display: grid;
-      gap: 20px;
-    }
-
-    .grid {
-      display: grid;
-      gap: 20px;
-    }
-
-    @media (min-width: 900px) {
-      .grid.cols-2 {
-        grid-template-columns: 1.1fr 1fr;
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
       }
-
-      .grid.cols-3 {
-        grid-template-columns: repeat(3, 1fr);
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
-
-    .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
-
-    .card h2 {
-      margin-top: 0;
-      font-size: 1.1rem;
+    
+    .animate-slide-in {
+      animation: slideIn 0.3s ease-out;
     }
-
-    .label {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 6px;
-      display: block;
+    
+    .animate-fade-in {
+      animation: fadeIn 0.4s ease-out;
     }
-
-    .input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.95rem;
-      background: #fff;
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #0d8a82 0%, #053734 100%);
     }
-
-    textarea {
-      min-height: 68px;
-      resize: vertical;
+    
+    .card-hover {
+      transition: all 0.2s ease;
     }
-
-    .button {
-      border: none;
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      background: var(--primary);
-      color: #fff;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     }
-
-    .button.secondary {
-      background: var(--primary-soft);
-      color: var(--primary);
-      border: 1px solid var(--border);
+    
+    .expense-item {
+      transition: all 0.2s ease;
     }
-
-    .button.ghost {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
+    
+    .expense-item:hover {
+      background: #f8fafa;
+      border-color: #0d8a82;
     }
-
-    .button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(15, 61, 62, 0.12);
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .summary {
-      display: grid;
-      gap: 12px;
-    }
-
-    .summary-item {
-      padding: 12px;
-      border-radius: 12px;
-      background: var(--primary-soft);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .summary-item strong {
-      font-size: 1.4rem;
-      font-weight: 600;
-    }
-
-    .summary-item span {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .summary-item.positive strong {
-      color: var(--success);
-    }
-
-    .summary-item.negative strong {
-      color: var(--danger);
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .filters .button {
-      flex: 1 1 auto;
-      min-width: 110px;
-    }
-
-    .filters .button.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .expense {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-    }
-
-    .expense h3 {
-      margin: 0;
-      font-size: 1rem;
-    }
-
-    .expense p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    .expense .meta {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
-    }
-
-    .expense .value {
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    .expense .category {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-
-    .categories {
-      display: grid;
-      gap: 12px;
-    }
-
-    .category-bar {
-      display: grid;
-      gap: 6px;
-    }
-
-    .bar {
-      height: 10px;
-      border-radius: 999px;
-      background: var(--border);
+    
+    .stat-card {
+      position: relative;
       overflow: hidden;
     }
-
-    .bar span {
-      display: block;
-      height: 100%;
-      background: var(--accent);
-      border-radius: 999px;
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #0d8a82, #47afa7);
     }
-
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 20px 0;
-      font-size: 0.95rem;
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #0d8a82;
+      box-shadow: 0 0 0 3px rgba(13, 138, 130, 0.1);
     }
-
-    .footer-note {
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-align: center;
-      padding-bottom: 12px;
+    
+    .category-badge {
+      transition: all 0.2s ease;
     }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #fff;
-      border: 1px solid var(--border);
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .edit-actions {
-      display: flex;
-      gap: 8px;
+    
+    .category-badge:hover {
+      transform: scale(1.05);
     }
   </style>
 </head>
-<body>
-  <header>
-    <h1>Controle simples de gastos</h1>
-    <p>Registre, visualize e ajuste seus gastos em segundos.</p>
+<body class="bg-gradient-to-br from-slate-50 via-slate-100 to-primary-50 min-h-screen">
+  
+  <!-- Header -->
+  <header class="gradient-bg text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-bold mb-2">Controle de Gastos</h1>
+          <p class="text-primary-100 text-sm sm:text-base">Gerencie suas finanças de forma simples e eficiente</p>
+        </div>
+        <div class="hidden sm:flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
+          <div class="text-right">
+            <p class="text-xs text-primary-100 mb-1">Saldo disponível</p>
+            <p class="text-2xl font-bold font-mono" id="header-balance">R$ 0,00</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <section class="grid cols-2">
-      <div class="card">
-        <h2>Novo gasto</h2>
-        <form id="expense-form" class="form-grid">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Filtros de Período -->
+    <div class="mb-8 animate-fade-in">
+      <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-slate-200">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <label class="label" for="amount">Valor</label>
-            <input class="input" id="amount" name="amount" type="number" min="0" step="0.01" placeholder="R$ 0,00" required />
+            <h2 class="text-lg font-semibold text-slate-800 mb-1">Período de visualização</h2>
+            <p class="text-sm text-slate-500">Selecione o intervalo para análise dos gastos</p>
           </div>
+          <div class="flex gap-2 filters w-full sm:w-auto" role="tablist" aria-label="Filtro de período">
+            <button class="flex-1 sm:flex-none px-6 py-3 rounded-xl font-medium transition-all" data-range="day" type="button">
+              Hoje
+            </button>
+            <button class="flex-1 sm:flex-none px-6 py-3 rounded-xl font-medium transition-all" data-range="week" type="button">
+              Semana
+            </button>
+            <button class="flex-1 sm:flex-none px-6 py-3 rounded-xl font-medium transition-all active" data-range="month" type="button">
+              Mês
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid Principal -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      
+      <!-- Cards de Resumo -->
+      <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6" id="summary"></div>
+      
+      <!-- Formulário de Novo Gasto -->
+      <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-200 card-hover">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-slate-800">Novo Gasto</h2>
+          <span class="px-3 py-1 bg-primary-50 text-primary-700 text-xs font-medium rounded-full" id="form-feedback">
+            Auto-salvamento ativo
+          </span>
+        </div>
+        
+        <form id="expense-form" class="space-y-4">
           <div>
-            <label class="label" for="category">Categoria</label>
-            <select id="category" name="category" required>
-              <option value="">Selecione</option>
-              <option>Moradia</option>
-              <option>Alimentação</option>
-              <option>Transporte</option>
-              <option>Saúde</option>
-              <option>Lazer</option>
-              <option>Educação</option>
-              <option>Outros</option>
+            <label class="block text-sm font-medium text-slate-700 mb-2" for="amount">
+              Valor (R$)
+            </label>
+            <input 
+              class="w-full px-4 py-3 border border-slate-300 rounded-xl font-mono text-lg transition-all" 
+              id="amount" 
+              name="amount" 
+              type="number" 
+              min="0" 
+              step="0.01" 
+              placeholder="0,00" 
+              required 
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2" for="category">
+              Categoria
+            </label>
+            <select 
+              id="category" 
+              name="category" 
+              class="w-full px-4 py-3 border border-slate-300 rounded-xl transition-all appearance-none bg-white cursor-pointer" 
+              required
+            >
+              <option value="">Selecione uma categoria</option>
+              <option value="Moradia">🏠 Moradia</option>
+              <option value="Alimentação">🍽️ Alimentação</option>
+              <option value="Transporte">🚗 Transporte</option>
+              <option value="Saúde">💊 Saúde</option>
+              <option value="Lazer">🎮 Lazer</option>
+              <option value="Educação">📚 Educação</option>
+              <option value="Compras">🛍️ Compras</option>
+              <option value="Outros">📌 Outros</option>
             </select>
           </div>
+          
           <div>
-            <label class="label" for="date">Data</label>
-            <input class="input" id="date" name="date" type="date" required />
+            <label class="block text-sm font-medium text-slate-700 mb-2" for="date">
+              Data
+            </label>
+            <input 
+              class="w-full px-4 py-3 border border-slate-300 rounded-xl transition-all" 
+              id="date" 
+              name="date" 
+              type="date" 
+              required 
+            />
           </div>
+          
           <div>
-            <label class="label" for="note">Observação (opcional)</label>
-            <textarea id="note" name="note" placeholder="Ex.: mercado, remédio, passagem"></textarea>
+            <label class="block text-sm font-medium text-slate-700 mb-2" for="note">
+              Observação (opcional)
+            </label>
+            <textarea 
+              id="note" 
+              name="note" 
+              class="w-full px-4 py-3 border border-slate-300 rounded-xl resize-none transition-all" 
+              rows="2"
+              placeholder="Ex: Almoço com cliente, Combustível, etc."
+            ></textarea>
           </div>
-          <div class="form-actions">
-            <button class="button" type="submit">Salvar gasto</button>
-            <button class="button ghost" id="cancel-edit" type="button" hidden>Cancelar edição</button>
+          
+          <div class="flex gap-3 pt-2">
+            <button 
+              class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-primary-500/30 transition-all transform hover:scale-105 active:scale-95" 
+              type="submit"
+            >
+              Salvar Gasto
+            </button>
+            <button 
+              class="px-6 py-3 border border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-all" 
+              id="cancel-edit" 
+              type="button" 
+              hidden
+            >
+              Cancelar
+            </button>
           </div>
-          <span class="badge" id="form-feedback">Tudo salvo automaticamente.</span>
         </form>
       </div>
+    </div>
 
-      <div class="card">
-        <h2>Visão geral</h2>
-        <div class="summary" id="summary"></div>
-        <div class="filters" role="tablist" aria-label="Filtro de período">
-          <button class="button secondary" data-range="day" type="button">Hoje</button>
-          <button class="button secondary" data-range="week" type="button">Semana</button>
-          <button class="button secondary active" data-range="month" type="button">Mês</button>
+    <!-- Insights e Comparação -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-slate-800">Comparação</h3>
         </div>
-        <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-          <span class="badge" id="comparison"></span>
-          <span class="badge" id="balance-status"></span>
-        </div>
+        <p class="text-sm text-slate-600" id="comparison">Carregando...</p>
       </div>
-    </section>
+      
+      <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 border border-emerald-200">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-slate-800">Status do Saldo</h3>
+        </div>
+        <p class="text-sm text-slate-600" id="balance-status">Defina um orçamento</p>
+      </div>
+      
+      <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 border border-purple-200">
+        <label class="block text-sm font-medium text-slate-700 mb-3" for="budget">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <span>Orçamento do Período</span>
+          </div>
+        </label>
+        <input 
+          class="w-full px-4 py-2 border border-purple-300 rounded-xl font-mono text-lg bg-white transition-all" 
+          id="budget" 
+          type="number" 
+          min="0" 
+          step="0.01" 
+          placeholder="R$ 0,00" 
+        />
+      </div>
+    </div>
 
-    <section class="grid cols-2">
-      <div class="card">
-        <h2>Gastos do período</h2>
-        <div class="list" id="expense-list"></div>
+    <!-- Categorias em Destaque -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-200 mb-8 card-hover">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-slate-800">Categorias em Destaque</h2>
+        <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+          Por valor total
+        </span>
       </div>
-      <div class="card">
-        <h2>Categorias em destaque</h2>
-        <div class="categories" id="category-chart"></div>
-      </div>
-    </section>
+      <div id="category-chart" class="space-y-4"></div>
+    </div>
 
-    <section class="card">
-      <h2>Controle de saldo</h2>
-      <div class="grid cols-3">
-        <div>
-          <label class="label" for="budget">Saldo disponível no período</label>
-          <input class="input" id="budget" type="number" min="0" step="0.01" placeholder="R$ 0,00" />
-        </div>
-        <div>
-          <label class="label" for="auto-save">Status</label>
-          <div class="badge" id="auto-save">Sem necessidade de botão: tudo fica salvo.</div>
-        </div>
-        <div>
-          <label class="label" for="clear-data">Organização</label>
-          <button class="button ghost" id="clear-data" type="button">Limpar todos os gastos</button>
-        </div>
+    <!-- Lista de Gastos -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-200 card-hover">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-slate-800">Histórico de Gastos</h2>
+        <button 
+          class="px-4 py-2 border border-red-300 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-all" 
+          id="clear-data" 
+          type="button"
+        >
+          Limpar Tudo
+        </button>
       </div>
-    </section>
+      <div id="expense-list" class="space-y-3"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center">
+      <p class="text-sm text-slate-500">
+        🔒 Seus dados permanecem apenas neste navegador e não são compartilhados.
+      </p>
+    </div>
   </main>
-
-  <div class="footer-note">Seus dados ficam apenas neste navegador.</div>
 
   <script>
     const STORAGE_KEY = "simple-expenses";
@@ -414,6 +363,7 @@
     const formFeedback = document.getElementById("form-feedback");
     const budgetInput = document.getElementById("budget");
     const clearButton = document.getElementById("clear-data");
+    const headerBalance = document.getElementById("header-balance");
 
     const state = {
       expenses: [],
@@ -422,13 +372,14 @@
     };
 
     const categoryColors = {
-      Moradia: "#1b5b5f",
-      Alimentação: "#2b7a4b",
-      Transporte: "#4b6b88",
-      Saúde: "#3c7b8f",
-      Lazer: "#7a6b9f",
-      Educação: "#4f7688",
-      Outros: "#6d6f75",
+      Moradia: { bg: "bg-purple-100", border: "border-purple-300", text: "text-purple-700", icon: "🏠" },
+      Alimentação: { bg: "bg-emerald-100", border: "border-emerald-300", text: "text-emerald-700", icon: "🍽️" },
+      Transporte: { bg: "bg-blue-100", border: "border-blue-300", text: "text-blue-700", icon: "🚗" },
+      Saúde: { bg: "bg-red-100", border: "border-red-300", text: "text-red-700", icon: "💊" },
+      Lazer: { bg: "bg-pink-100", border: "border-pink-300", text: "text-pink-700", icon: "🎮" },
+      Educação: { bg: "bg-cyan-100", border: "border-cyan-300", text: "text-cyan-700", icon: "📚" },
+      Compras: { bg: "bg-orange-100", border: "border-orange-300", text: "text-orange-700", icon: "🛍️" },
+      Outros: { bg: "bg-slate-100", border: "border-slate-300", text: "text-slate-700", icon: "📌" },
     };
 
     const formatCurrency = (value) =>
@@ -441,10 +392,12 @@
 
     const saveExpenses = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.expenses));
-      formFeedback.textContent = "Atualizado agora.";
+      formFeedback.textContent = "✓ Salvo agora";
+      formFeedback.className = "px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-medium rounded-full";
       setTimeout(() => {
-        formFeedback.textContent = "Tudo salvo automaticamente.";
-      }, 1500);
+        formFeedback.textContent = "Auto-salvamento ativo";
+        formFeedback.className = "px-3 py-1 bg-primary-50 text-primary-700 text-xs font-medium rounded-full";
+      }, 2000);
     };
 
     const loadExpenses = () => {
@@ -514,71 +467,128 @@
       const budget = parseFloat(budgetInput.value) || 0;
       const balance = budget - total;
 
-      summary.innerHTML = "";
+      headerBalance.textContent = formatCurrency(balance);
 
-      const totalCard = document.createElement("div");
-      totalCard.className = "summary-item";
-      totalCard.innerHTML = `<span>Total gasto</span><strong>${formatCurrency(total)}</strong>`;
+      summary.innerHTML = `
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 stat-card card-hover animate-slide-in">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium text-slate-600">Total Gasto</span>
+            <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+              </svg>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-slate-800 font-mono">${formatCurrency(total)}</p>
+          <p class="text-xs text-slate-500 mt-2">${filteredExpenses.length} ${filteredExpenses.length === 1 ? 'transação' : 'transações'}</p>
+        </div>
 
-      const balanceCard = document.createElement("div");
-      balanceCard.className = `summary-item ${balance >= 0 ? "positive" : "negative"}`;
-      balanceCard.innerHTML = `<span>Saldo disponível</span><strong>${formatCurrency(balance)}</strong>`;
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 stat-card card-hover animate-slide-in" style="animation-delay: 0.1s">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium text-slate-600">Saldo Restante</span>
+            <div class="w-10 h-10 ${balance >= 0 ? 'bg-emerald-100' : 'bg-red-100'} rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 ${balance >= 0 ? 'text-emerald-600' : 'text-red-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${balance >= 0 ? 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' : 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6'}"></path>
+              </svg>
+            </div>
+          </div>
+          <p class="text-3xl font-bold ${balance >= 0 ? 'text-emerald-600' : 'text-red-600'} font-mono">${formatCurrency(balance)}</p>
+          <p class="text-xs text-slate-500 mt-2">${budget > 0 ? `${((total / budget) * 100).toFixed(1)}% do orçamento` : 'Defina um orçamento'}</p>
+        </div>
 
-      const averageCard = document.createElement("div");
-      const average = filteredExpenses.length ? total / filteredExpenses.length : 0;
-      averageCard.className = "summary-item";
-      averageCard.innerHTML = `<span>Gasto médio por registro</span><strong>${formatCurrency(average)}</strong>`;
-
-      summary.append(totalCard, balanceCard, averageCard);
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 stat-card card-hover animate-slide-in" style="animation-delay: 0.2s">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium text-slate-600">Gasto Médio</span>
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-slate-800 font-mono">${formatCurrency(filteredExpenses.length ? total / filteredExpenses.length : 0)}</p>
+          <p class="text-xs text-slate-500 mt-2">Por transação</p>
+        </div>
+      `;
 
       if (previousTotal === 0 && total > 0) {
-        comparison.textContent = "Sem histórico anterior para comparar.";
+        comparison.textContent = "Primeiro período com gastos registrados.";
       } else if (previousTotal === 0) {
-        comparison.textContent = "Nenhum gasto no período anterior.";
+        comparison.textContent = "Nenhum dado do período anterior.";
       } else {
         const diff = total - previousTotal;
         const percent = ((diff / previousTotal) * 100).toFixed(1);
-        const trend = diff > 0 ? "acima" : "abaixo";
-        comparison.textContent = `${Math.abs(percent)}% ${trend} do período anterior.`;
+        const isIncrease = diff > 0;
+        comparison.textContent = `${isIncrease ? '↑' : '↓'} ${Math.abs(percent)}% ${isIncrease ? 'acima' : 'abaixo'} do período anterior`;
       }
 
       if (!budget) {
-        balanceStatus.textContent = "Defina um saldo disponível para acompanhar.";
+        balanceStatus.textContent = "Configure um orçamento para acompanhamento.";
       } else if (balance >= 0) {
-        balanceStatus.textContent = "Dentro do saldo previsto. Ótimo controle.";
+        balanceStatus.textContent = `✓ Dentro do planejado. ${((balance / budget) * 100).toFixed(0)}% disponível.`;
       } else {
-        balanceStatus.textContent = "Atenção: gastos acima do saldo definido.";
+        balanceStatus.textContent = `⚠️ Excedeu em ${formatCurrency(Math.abs(balance))}`;
       }
     };
 
     const renderList = (filteredExpenses) => {
       list.innerHTML = "";
       if (!filteredExpenses.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "Nenhum gasto registrado neste período.";
-        list.appendChild(empty);
+        list.innerHTML = `
+          <div class="text-center py-16">
+            <div class="text-6xl mb-4">📊</div>
+            <p class="text-slate-500 text-lg">Nenhum gasto registrado</p>
+            <p class="text-slate-400 text-sm mt-2">Adicione seu primeiro gasto para começar</p>
+          </div>
+        `;
         return;
       }
 
       filteredExpenses
         .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .forEach((expense) => {
+        .forEach((expense, index) => {
+          const catColors = categoryColors[expense.category] || categoryColors.Outros;
           const item = document.createElement("div");
-          item.className = "expense";
-          const color = categoryColors[expense.category] || "#1d6f6b";
+          item.className = "expense-item border rounded-xl p-4 animate-slide-in";
+          item.style.animationDelay = `${index * 0.05}s`;
 
           item.innerHTML = `
-            <div>
-              <h3>${expense.note || expense.category}</h3>
-              <p>${new Date(expense.date).toLocaleDateString("pt-BR")} • ${expense.category}</p>
-              <div class="category"><span class="dot" style="background:${color}"></span>${expense.category}</div>
-            </div>
-            <div class="meta">
-              <div class="value">${formatCurrency(expense.amount)}</div>
-              <div class="edit-actions">
-                <button class="button ghost" data-action="edit" data-id="${expense.id}">Editar</button>
-                <button class="button ghost" data-action="delete" data-id="${expense.id}">Remover</button>
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-4 flex-1">
+                <div class="w-12 h-12 ${catColors.bg} rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                  ${catColors.icon}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-slate-800 mb-1">${expense.note || expense.category}</h3>
+                  <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                    <span>${new Date(expense.date).toLocaleDateString("pt-BR")}</span>
+                    <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
+                    <span class="inline-flex items-center gap-1 px-2 py-1 ${catColors.bg} ${catColors.text} rounded-lg text-xs font-medium">
+                      ${catColors.icon} ${expense.category}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex flex-col items-end gap-2">
+                <div class="text-xl font-bold text-slate-800 font-mono whitespace-nowrap">
+                  ${formatCurrency(expense.amount)}
+                </div>
+                <div class="flex gap-2">
+                  <button 
+                    class="px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition-all"
+                    data-action="edit" 
+                    data-id="${expense.id}"
+                  >
+                    Editar
+                  </button>
+                  <button 
+                    class="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-all"
+                    data-action="delete" 
+                    data-id="${expense.id}"
+                  >
+                    Excluir
+                  </button>
+                </div>
               </div>
             </div>
           `;
@@ -589,10 +599,12 @@
     const renderCategories = (filteredExpenses) => {
       categoryChart.innerHTML = "";
       if (!filteredExpenses.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "As categorias aparecerão aqui.";
-        categoryChart.appendChild(empty);
+        categoryChart.innerHTML = `
+          <div class="text-center py-8">
+            <div class="text-4xl mb-3">📈</div>
+            <p class="text-slate-500">As categorias aparecerão aqui</p>
+          </div>
+        `;
         return;
       }
 
@@ -602,21 +614,31 @@
       }, {});
 
       const max = Math.max(...Object.values(totals));
+      const totalSum = Object.values(totals).reduce((a, b) => a + b, 0);
 
       Object.entries(totals)
         .sort((a, b) => b[1] - a[1])
-        .forEach(([category, value]) => {
+        .forEach(([category, value], index) => {
+          const catColors = categoryColors[category] || categoryColors.Outros;
+          const percentage = ((value / totalSum) * 100).toFixed(1);
+          const barWidth = (value / max) * 100;
+          
           const wrapper = document.createElement("div");
-          wrapper.className = "category-bar";
-          const color = categoryColors[category] || "#1d6f6b";
-          const width = max ? (value / max) * 100 : 0;
+          wrapper.className = "animate-slide-in";
+          wrapper.style.animationDelay = `${index * 0.1}s`;
 
           wrapper.innerHTML = `
-            <div style="display:flex; justify-content: space-between; font-size:0.9rem;">
-              <span>${category}</span>
-              <strong>${formatCurrency(value)}</strong>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">${catColors.icon}</span>
+                <span class="font-medium text-slate-700">${category}</span>
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">${percentage}%</span>
+              </div>
+              <span class="font-semibold text-slate-800 font-mono">${formatCurrency(value)}</span>
             </div>
-            <div class="bar"><span style="width:${width}%; background:${color};"></span></div>
+            <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div class="${catColors.bg.replace('100', '400')} h-full rounded-full transition-all duration-500" style="width: ${barWidth}%"></div>
+            </div>
           `;
 
           categoryChart.appendChild(wrapper);
@@ -642,7 +664,8 @@
 
       const amount = parseFloat(amountInput.value);
       if (!amount || amount <= 0) {
-        formFeedback.textContent = "Informe um valor válido.";
+        formFeedback.textContent = "⚠️ Valor inválido";
+        formFeedback.className = "px-3 py-1 bg-red-50 text-red-700 text-xs font-medium rounded-full";
         return;
       }
 
@@ -681,36 +704,52 @@
         noteInput.value = expense.note;
         state.editingId = id;
         cancelEditButton.hidden = false;
-        formFeedback.textContent = "Editando gasto. Salve para confirmar.";
+        formFeedback.textContent = "✏️ Editando gasto";
+        formFeedback.className = "px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full";
+        amountInput.focus();
       }
 
       if (action === "delete") {
-        state.expenses = state.expenses.filter((item) => item.id !== id);
-        saveExpenses();
-        render();
+        if (confirm("Deseja realmente excluir este gasto?")) {
+          state.expenses = state.expenses.filter((item) => item.id !== id);
+          saveExpenses();
+          render();
+        }
       }
     };
 
     const handleRangeChange = (event) => {
       const button = event.target.closest("button");
-      if (!button) return;
+      if (!button || !button.dataset.range) return;
+      
       const range = button.dataset.range;
-      if (!range) return;
       state.range = range;
-      document.querySelectorAll(".filters .button").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.range === range);
+      
+      document.querySelectorAll(".filters button").forEach((btn) => {
+        if (btn.dataset.range === range) {
+          btn.className = "flex-1 sm:flex-none px-6 py-3 rounded-xl font-medium transition-all bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg active";
+        } else {
+          btn.className = "flex-1 sm:flex-none px-6 py-3 rounded-xl font-medium transition-all bg-slate-100 text-slate-700 hover:bg-slate-200";
+        }
       });
+      
       render();
     };
 
     cancelEditButton.addEventListener("click", () => {
       resetForm();
-      formFeedback.textContent = "Edição cancelada.";
+      formFeedback.textContent = "Edição cancelada";
+      formFeedback.className = "px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full";
+      setTimeout(() => {
+        formFeedback.textContent = "Auto-salvamento ativo";
+        formFeedback.className = "px-3 py-1 bg-primary-50 text-primary-700 text-xs font-medium rounded-full";
+      }, 2000);
     });
 
     budgetInput.addEventListener("input", saveBudget);
+    
     clearButton.addEventListener("click", () => {
-      if (confirm("Deseja remover todos os gastos?")) {
+      if (confirm("⚠️ Deseja realmente excluir TODOS os gastos?\n\nEsta ação não pode ser desfeita.")) {
         state.expenses = [];
         saveExpenses();
         render();
@@ -725,6 +764,11 @@
       loadExpenses();
       loadBudget();
       dateInput.value = todayISO();
+      
+      // Set initial active button style
+      document.querySelector('.filters button[data-range="month"]').className = 
+        "flex-1 sm:flex-none px-6 py-3 rounded-xl font-medium transition-all bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg active";
+      
       render();
     };
 
